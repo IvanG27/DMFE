@@ -10,7 +10,10 @@ urlpatterns = [
     path('instructions.html', views.instructions, name="Instructions"),
     path('eda.html', views.eda, name="EDA"),
     path('pca.html', views.pca, name="PCA"),
-    path("", views.uploadFile, name = "uploadFile"),
+    path("", views.uploadFile, name = "UploadFile"),
+    path("file.html", views.listarArchivos, name = "Files"),
+    path("deleteFile.html/<int:id_file>", views.deleteFile, name ="DeleteFile"),
+    path("mostrarDatos.html/<int:id_file>", views.mostrarDatos, name ="MostrarDatos"),
 ]
 
 if settings.DEBUG: 
