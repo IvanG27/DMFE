@@ -18,6 +18,9 @@ def instructions(request):
 def eda(request):
     return render(request, "DMFEApp/eda.html")
 
+
+##Vistas necesarias para el algotimo PCA
+
 def pca(request):
     files = models.Document.objects.all()
     return render(request, "DMFEApp/PCA.html", {"files": files})
@@ -25,13 +28,8 @@ def pca(request):
 def mostrarDatos(request, id_file):
     file = models.Document.objects.get(pk=id_file)
     archivo = pd.read_csv(file.uploadedFile)
-    Correlacion = archivo.corr(method='pearson')
     
-    plt.figure(figsize=(14,7))
-    MatrizInf = np.triu(Correlacion)
-    sns.heatmap(Correlacion, cmap='RdBu_r', annot=True, mask=MatrizInf)
-    plt.savefig('media/prueba3.png')
-
+    #Obtenemos los datos de las columnas y generamos la tabla en código html
     columns = "<tr>"
     for col in archivo.columns:
         columns += f"<th>{col}</th>"
@@ -42,6 +40,7 @@ def mostrarDatos(request, id_file):
         hola+= f"{col}"
     hola += "adios"
 
+    #Obtenemos los datos de las filas y generamos la tabla en código html
     rows = ""
     iter = 0
     for row in archivo.values:
@@ -52,10 +51,101 @@ def mostrarDatos(request, id_file):
         iter+=1
         if iter>9:
             break
+    
+    #Volvemos a mandar los documentos disponibles para listarlos
     files = models.Document.objects.all()
-    context = {"columns": columns, "rows": rows, "files":files}  
+
+    #Creamos nuestro contexto
+    context = {"columns": columns, "rows": rows, "files":files, "id_file": id_file}  
     return render(request, "DMFEApp/PCA.html", context)
 
+def obtenerResultadosPCA (request, id_file):
+    #Obtenemos el archivo que seleccionó el usuario
+    file = models.Document.objects.get(pk=id_file)
+    archivo = pd.read_csv(file.uploadedFile)
+    Correlacion = archivo.corr(method='pearson')
+    
+    #Obtenemos el mapa de calor
+    plt.figure(figsize=(14,7))
+    MatrizInf = np.triu(Correlacion)
+    sns.heatmap(Correlacion, cmap='RdBu_r', annot=True, mask=MatrizInf)
+    plt.savefig('media/graficas/PCA/heatmap.png')
+    plt.clf()
+
+    #Importamos las bibliotecas necesarias
+    from sklearn.decomposition import PCA
+    from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+    #Estandarizamos los datos del archivo
+    Estandarizar = StandardScaler()  # Se instancia el objeto StandardScaler o MinMaxScaler 
+    MEstandarizada = Estandarizar.fit_transform(archivo)
+
+    #Obtenemos el número de columnas del archivo y obtenemos los componentes
+    componentes = len(archivo.columns)
+    pca = PCA(componentes) #Se instancia el objeto PCA 
+    pca.fit(MEstandarizada)        
+
+    #Obtenemos la varianza
+    Varianza = pca.explained_variance_ratio_
+    var = 0
+    componentesF = 0
+    for val in Varianza:
+        if var > 0.9:
+            break
+        componentesF += 1
+        var += val
+
+    #Creamos la gráfica de la varianza acumulada
+    plt.plot(np.cumsum(pca.explained_variance_ratio_))
+    plt.xlabel('Número de componentes')
+    plt.ylabel('Varianza acumulada')
+    plt.grid()
+    plt.savefig('media/graficas/PCA/varianza.png')
+    plt.clf()
+    
+    CargasComponentes = pd.DataFrame(abs(pca.components_), columns=archivo.columns)
+    
+    #Obtenemos las componentes principales
+    z = []
+    col = ''
+    contadorY = 0
+    for y in CargasComponentes.index:
+      contador=0
+      contadorX=0
+      max = 0
+      for x in CargasComponentes.columns:
+        f = x.title()
+        f = f.lower()
+        valorListado = (f in z)
+        if (contador == 0 and valorListado != True):
+          max = CargasComponentes.iat[contadorY, contadorX]
+          col = x
+          print ("contador = 0 col = " + col)
+        elif (max < CargasComponentes.iat[contadorY, contadorX] and valorListado == False):
+          max = CargasComponentes.iat[contadorY, contadorX]
+          col = x
+        contador += 1
+        if (contador == len(CargasComponentes.columns)):
+          z.append(col)
+        contadorX += 1
+      contadorY += 1
+      if (contadorY >= componentes):
+        break
+    
+    #Eliminamos las columnas que no forman parte de las componentes principales
+    DatosHipotecaACP = archivo.drop(columns=z)
+    DatosHipotecaACP = archivo.drop(columns=DatosHipotecaACP.columns)
+    DatosHipotecaACP
+
+    context = {}
+    return render(request, "DMFEApp/resultadosPCA.html", context)
+
+def  resultadosPCA(request):
+    return render(request, "resultadosPCA.htlm")
+
+
+
+##Función para subir archivos
 def uploadFile(request):
     if request.method == "POST":
         # Fetching the form data
@@ -75,10 +165,12 @@ def uploadFile(request):
         "files": documents
     })
 
+##Función para listar los archivos en file.html
 def listarArchivos(request):
     files = models.Document.objects.all()
     return render(request, "DMFEApp/file.html", {"files": files})
 
+#Función para eliminar archivos subidos en file.html
 def deleteFile (request, id_file):
     file = models.Document.objects.get(pk=id_file)
     file.delete()

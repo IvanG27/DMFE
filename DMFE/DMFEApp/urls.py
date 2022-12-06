@@ -14,6 +14,9 @@ urlpatterns = [
     path("file.html", views.listarArchivos, name = "Files"),
     path("deleteFile.html/<int:id_file>", views.deleteFile, name ="DeleteFile"),
     path("mostrarDatos.html/<int:id_file>", views.mostrarDatos, name ="MostrarDatos"),
+    path("obtenerResultadosPCA.html/<int:id_file>", views.obtenerResultadosPCA, name ="ObtenerResultadosPCA"),
+    path("resultadosPCA.html", views.resultadosPCA, name ="ResultadosPCA"),
+    
 ]
 
 if settings.DEBUG: 
