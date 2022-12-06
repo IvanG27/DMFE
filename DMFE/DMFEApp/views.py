@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np                     
 import matplotlib.pyplot as plt        
 import seaborn as sns
+DatosACP = pd.DataFrame()
+varPCA = 0
 
 # Create your views here.
 def home(request):
@@ -35,11 +37,6 @@ def mostrarDatos(request, id_file):
         columns += f"<th>{col}</th>"
     columns += "</tr>"
 
-    hola = "<tr>"
-    for col in archivo.columns:
-        hola+= f"{col}"
-    hola += "adios"
-
     #Obtenemos los datos de las filas y generamos la tabla en código html
     rows = ""
     iter = 0
@@ -55,11 +52,13 @@ def mostrarDatos(request, id_file):
     #Volvemos a mandar los documentos disponibles para listarlos
     files = models.Document.objects.all()
 
+    obtenerResultadosPCA(id_file)
+
     #Creamos nuestro contexto
     context = {"columns": columns, "rows": rows, "files":files, "id_file": id_file}  
     return render(request, "DMFEApp/PCA.html", context)
 
-def obtenerResultadosPCA (request, id_file):
+def obtenerResultadosPCA (id_file):
     #Obtenemos el archivo que seleccionó el usuario
     file = models.Document.objects.get(pk=id_file)
     archivo = pd.read_csv(file.uploadedFile)
@@ -95,6 +94,9 @@ def obtenerResultadosPCA (request, id_file):
         componentesF += 1
         var += val
 
+    global varPCA
+    varPCA = var
+
     #Creamos la gráfica de la varianza acumulada
     plt.plot(np.cumsum(pca.explained_variance_ratio_))
     plt.xlabel('Número de componentes')
@@ -120,7 +122,6 @@ def obtenerResultadosPCA (request, id_file):
         if (contador == 0 and valorListado != True):
           max = CargasComponentes.iat[contadorY, contadorX]
           col = x
-          print ("contador = 0 col = " + col)
         elif (max < CargasComponentes.iat[contadorY, contadorX] and valorListado == False):
           max = CargasComponentes.iat[contadorY, contadorX]
           col = x
@@ -129,23 +130,46 @@ def obtenerResultadosPCA (request, id_file):
           z.append(col)
         contadorX += 1
       contadorY += 1
-      if (contadorY >= componentes):
+      if (contadorY >= componentesF-1):
         break
     
     #Eliminamos las columnas que no forman parte de las componentes principales
-    DatosHipotecaACP = archivo.drop(columns=z)
-    DatosHipotecaACP = archivo.drop(columns=DatosHipotecaACP.columns)
-    DatosHipotecaACP
+    DatosACP2 = archivo.drop(columns=z)
+    DatosACP2 = archivo.drop(columns=DatosACP2.columns)
 
-    context = {}
-    return render(request, "DMFEApp/resultadosPCA.html", context)
+    print(DatosACP2.columns)
+
+    global DatosACP
+    DatosACP = DatosACP2
 
 def  resultadosPCA(request):
-    return render(request, "resultadosPCA.htlm")
+    global varPCA
+    varianza = varPCA
+    global DatosACP
+    archivo = DatosACP
+    componentesP = archivo.columns
+    contador = 0
+    #Obtenemos los datos de las columnas y generamos la tabla en código html
+    columns = "<tr>"
+    for col in DatosACP.columns:
+        columns += f"<th>{col}</th>"
+        contador += 1
+    columns += "</tr>"
+    numComponentes = contador
+    #Obtenemos los datos de las filas y generamos la tabla en código html
+    rows = ""
+    for row in DatosACP.values:
+        rows += "<tr>"
+        for value in row:
+            rows += f"<td>{value}</td>"
+        rows += "</tr>"
+    
+    print("Numero de componentes: " + str(numComponentes))
+    print("Componentes: " + str(componentesP))
+    context = {"numComponentes":numComponentes, "componentesP":componentesP, "varianza":varianza, "columns":columns, "rows": rows}
+    return render(request, "DMFEApp/resultadosPCA.html", context)
 
-
-
-##Función para subir archivos
+#Función para subir archivos
 def uploadFile(request):
     if request.method == "POST":
         # Fetching the form data

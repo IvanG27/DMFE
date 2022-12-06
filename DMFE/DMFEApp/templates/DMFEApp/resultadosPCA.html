@@ -2,7 +2,20 @@
 {% block content %}
 <div class="right_col text-left" role="main">
     <h1 class="text-center"> PCA Resultados</h1>
-    <h2>Selecciona el archivo con el que deseas trabajar</h2>
-    
+    <h2>Con base al archivo seleccionado se generó el siguiente mapa de calor:</h2>
+    <article>
+      <div class = "container-article" align = "center">
+        <img src = "media/graficas/PCA/heatmap.png" width="800" height="400">
+      </div>
+    </article>
+    <h2>Posteriormente, se generó la gráfica de varianza:</h2>
+    <article>
+      <div class = "container-article" align = "center">
+        <img src = "media/graficas/PCA/varianza.png" width="800" height="400">
+      </div>
+    </article>
+    <h2>Con dicha gráfica, podemos determinar que el número de componentes principales es {{ numComponentes | safe }}, de modo que,
+      las componentes seleccionadas son {{ componentesP | safe }}
+    </h2>
   </div>
 {% endblock %}
