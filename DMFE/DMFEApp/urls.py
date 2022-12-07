@@ -9,6 +9,8 @@ urlpatterns = [
     path('home.html', views.home, name="Home"),
     path('instructions.html', views.instructions, name="Instructions"),
     path('eda.html', views.eda, name="EDA"),
+    path("mostrarDatosEDA.html/<int:id_file>", views.mostrarDatosEDA, name ="MostrarDatosEDA"),
+
     path('pca.html', views.pca, name="PCA"),
     path("", views.uploadFile, name = "UploadFile"),
     path("file.html", views.listarArchivos, name = "Files"),

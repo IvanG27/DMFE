@@ -13,7 +13,7 @@
             <input type="submit" value="Upload">
           </form>
           <h2>Archivos disponibles</h2>
-          <table class="table table-striped table-bordered table-primary ">
+          <table class="table table-bordered table-hover table-primary ">
             <thead>
               <tr>
                 <th scope="col">ID</th>
@@ -28,8 +28,8 @@
               <tr>
                 <td>{{ file.id }}</td>
                 <td>{{ file.title }}</td>
-                <td>{{ file.uploadedFile.url }}</td>
                 <td>{{ file.dateTimeOfUpload }}</td>
+                <td>{{ file.uploadedFile.url }}</td>
                 <td><a class="btn btn-danger" href="{% url 'DMFEApp:DeleteFile' file.id %}"> Eliminar</a></td>
               </tr>
               {% endfor %}

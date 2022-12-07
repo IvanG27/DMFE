@@ -2,11 +2,12 @@ from django.shortcuts import render,HttpResponse
 from django.conf import settings
 from . import models
 from django.core.files.storage import FileSystemStorage
-import pandas as pd
-import pandas as pd                    
+import pandas as pd                 
 import numpy as np                     
 import matplotlib.pyplot as plt        
 import seaborn as sns
+
+#Variables globales necesarias para PCA
 DatosACP = pd.DataFrame()
 varPCA = 0
 
@@ -17,12 +18,46 @@ def home(request):
 def instructions(request):
     return render(request, "DMFEApp/instructions.html")
 
+
+
+#Vistas necesarias para el algoritmo EDA
 def eda(request):
-    return render(request, "DMFEApp/eda.html")
+    files = models.Document.objects.all()
+    return render(request, "DMFEApp/eda.html", {"files": files})
+
+def mostrarDatosEDA(request, id_file):
+    file = models.Document.objects.get(pk=id_file)
+    archivo = pd.read_csv(file.uploadedFile)
+    
+    #Obtenemos los datos de las columnas y generamos la tabla en código html
+    columns = "<tr>"
+    for col in archivo.columns:
+        columns += f"<th>{col}</th>"
+    columns += "</tr>"
+
+    #Obtenemos los datos de las filas y generamos la tabla en código html
+    rows = ""
+    iter = 0
+    for row in archivo.values:
+        rows += "<tr>"
+        for value in row:
+            rows += f"<td>{value}</td>"
+        rows += "</tr>"
+        iter+=1
+        if iter>9:
+            break
+    
+    #Volvemos a mandar los documentos disponibles para listarlos
+    files = models.Document.objects.all()
+
+    obtenerResultadosPCA(id_file)
+
+    #Creamos nuestro contexto
+    context = {"columns": columns, "rows": rows, "files":files, "id_file": id_file}  
+    return render(request, "DMFEApp/PCA.html", context)
 
 
-##Vistas necesarias para el algotimo PCA
-
+#Vistas necesarias para el algoritmo PCA
 def pca(request):
     files = models.Document.objects.all()
     return render(request, "DMFEApp/PCA.html", {"files": files})
@@ -89,10 +124,12 @@ def obtenerResultadosPCA (id_file):
     var = 0
     componentesF = 0
     for val in Varianza:
-        if var > 0.9:
-            break
         componentesF += 1
         var += val
+        if var > 0.9:
+            componentesF -= 1
+            var -= val
+            break
 
     global varPCA
     varPCA = var
@@ -164,9 +201,14 @@ def  resultadosPCA(request):
             rows += f"<td>{value}</td>"
         rows += "</tr>"
     
-    print("Numero de componentes: " + str(numComponentes))
-    print("Componentes: " + str(componentesP))
-    context = {"numComponentes":numComponentes, "componentesP":componentesP, "varianza":varianza, "columns":columns, "rows": rows}
+    comp = ''
+    for a in componentesP: 
+        if a != componentesP[numComponentes-1]:
+            comp += (a + ', ')
+        else:
+            comp += ('y ' + a)
+    print(comp) 
+    context = {"numComponentes":numComponentes, "componentesP":comp, "varianza":varianza, "columns":columns, "rows": rows}
     return render(request, "DMFEApp/resultadosPCA.html", context)
 
 #Función para subir archivos

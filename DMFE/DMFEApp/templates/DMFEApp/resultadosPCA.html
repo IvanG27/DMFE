@@ -14,8 +14,23 @@
         <img src = "media/graficas/PCA/varianza.png" width="800" height="400">
       </div>
     </article>
-    <h2>Con dicha gráfica, podemos determinar que el número de componentes principales es {{ numComponentes | safe }}, de modo que,
-      las componentes seleccionadas son {{ componentesP | safe }}
+    <h2>
+      Con dicha gráfica, podemos determinar que el número de componentes principales es 
+      {{ numComponentes | safe }} sin contar el 0 que se observa en la gráfica.
     </h2>
-  </div>
+    <h2>De modo que, las componentes seleccionadas son: {{ componentesP | safe }}.</h2>
+    <h2>Con dichas componentes se consigue una varianza de: {{ varianza | safe }}.</h2>
+    <h2>Y como resultado la tabla generada es: </h2>
+    <div class="table-responsive">
+      <table  class="table table-bordered table-striped table-info">
+        <thead>
+          {{ columns | safe }}  
+        </thead>
+        <tbody>
+          {{ rows | safe }}
+        </tbody>
+      </table>
+    </div>
+</div>
+
 {% endblock %}

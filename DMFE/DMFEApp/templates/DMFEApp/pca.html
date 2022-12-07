@@ -4,31 +4,29 @@
       <div class="right_col text-left" role="main">
         <h1 class="text-center"> PCA </h1>
         <h2>Selecciona el archivo con el que deseas trabajar</h2>
-        <table class="table table-striped table-bordered table-primary "> 
+        <table class="table-bordered table-hover table table-primary "> 
           <thead>
             <tr>
-              <th scope='col'>ID</th>
               <th scope="col">Nombre del archivo</th>
               <th scope="col">Fecha de subida</th>
               <th scope="col">Ruta</th>
-              <th scope="col">Seleccionar</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             {% for file in files %}
             <tr>
-              <td>{{ file.id }}</td>
               <td>{{ file.title }}</td>
-              <td>{{ file.uploadedFile.url }}</td>
               <td>{{ file.dateTimeOfUpload }}</td>
-              <td><a class="btn btn-danger" href="{% url 'DMFEApp:MostrarDatos' file.id %}"> Seleccionar</a></td>
+              <td>{{ file.uploadedFile.url }}</td>
+              <td><a class="btn btn-primary" href="{% url 'DMFEApp:MostrarDatos' file.id %}"> Seleccionar</a></td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
         <h2>Para efectos de simplicidad, se mostrarán las primeras 10 columas del archivo seleccionado: </h2>
         <div class="table-responsive">
-          <table  class="table table-bordered table-striped table-info">
+          <table  class="table table-bordered table-hover table-info">
             <thead>
               {{ columns | safe }}  
             </thead>
@@ -37,7 +35,7 @@
             </tbody>
           </table>
         </div>
-        <a class="btn btn-danger" href="{% url 'DMFEApp:ResultadosPCA' %}"> Seleccionar</a>
+        <a class="btn btn-success" href="{% url 'DMFEApp:ResultadosPCA' %}"> Obtener Resultados</a>
       </div>
       
   <!-- /page content -->

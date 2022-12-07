@@ -1,11 +1,46 @@
 {% extends 'DMFEApp/general.html' %}
 
 {% block content %}
+<!-- page content -->
 
-    <!-- page content -->
-        <div class="right_col" role="main">
-          <h1> EDA </h1>
-        </div>
-    <!-- /page content -->
+<div class="right_col text-left" role="main">
+  <h1 class="text-center"> EDA </h1>
+  <h2>Selecciona el archivo con el que deseas trabajar</h2>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover table-primary "> 
+      <thead>
+        <tr>
+          <th scope="col">Nombre del archivo</th>
+          <th scope="col">Fecha de subida</th>
+          <th scope="col">Ruta</th>
+          <th scope="col">Seleccionar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for file in files %}
+        <tr>
+          <td>{{ file.title }}</td>
+          <td>{{ file.dateTimeOfUpload }}</td>
+          <td>{{ file.uploadedFile.url }}</td>
+          <td><a class="btn btn-danger" href="{% url 'DMFEApp:MostrarDatosEDA' file.id %}"> Seleccionar</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>  
+  <h2>Para efectos de simplicidad, se mostrarán las primeras 10 columas del archivo seleccionado: </h2>
+  <div class="table-responsive">
+    <table  class="table table-bordered table-striped table-info">
+      <thead>
+        {{ columns | safe }}  
+      </thead>
+      <tbody>
+        {{ rows | safe }}
+      </tbody>
+    </table>
+  </div>
+  <!--<a class="btn btn-danger" href="{% url 'DMFEApp:ResultadosPCA' %}"> Seleccionar</a>-->
+</div>
 
+<!-- /page content -->
 {% endblock %}
