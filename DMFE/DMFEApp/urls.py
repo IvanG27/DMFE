@@ -13,6 +13,7 @@ urlpatterns = [
     #plantillas para el algoritmo EDA
     path('eda.html', views.eda, name="EDA"),
     path("mostrarDatosEDA.html/<int:id_file>", views.mostrarDatosEDA, name ="MostrarDatosEDA"),
+    path("resultadosEDA.html", views.resultadosEDA, name ="ResultadosEDA"),
     #plantillas para el algoritmo PCA
     path('pca.html', views.pca, name="PCA"),
     path("mostrarDatosPCA.html/<int:id_file>", views.mostrarDatosPCA, name ="MostrarDatosPCA"),

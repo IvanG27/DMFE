@@ -72,8 +72,15 @@ def obtenerResultadosEDA(id_file):
     file = models.Document.objects.get(pk=id_file)
     archivo = pd.read_csv(file.uploadedFile)
     #guardamos la información en la variable global
+    b = []
+    for col in archivo.columns:
+        b.append(archivo[col].dtype)
+    contenido = {'Variable' : archivo.columns,
+                'Elementos nulos': archivo.isnull().sum(),
+                'Tipo de dato': b}
+    a = pd.DataFrame(contenido)
     global infoEDA
-    infoEDA = archivo.info()
+    infoEDA = a
     #creamos y guardamos la gráfica
     archivo.hist(figsize=(14,14), xrot=45)
     plt.savefig('media/graficas/EDA/distribucion.png')
@@ -109,8 +116,111 @@ def obtenerResultadosEDA(id_file):
     sns.heatmap(archivo.corr(), cmap='RdBu_r', annot=True, mask=MatrizInf)
     plt.savefig('media/graficas/EDA/heatmap.png')
     plt.clf()
-
     return (contadorC, contadorG)
+
+def resultadosEDA(request):
+    #recuperamos la info de los datos
+    global infoEDA
+    infoGral = infoEDA
+    #Obtenemos las columnas
+    columnsGr = "<tr>"
+    for col in infoGral.columns:
+        columnsGr += f"<th>{col}</th>"
+    columnsGr += "</tr>"
+    #Obtenemos los datos de las filas y generamos la tabla en código html
+    rowsGr = ""
+    for row in infoGral.values:
+        rowsGr += "<tr>"
+        for value in row:
+            rowsGr += f"<td>{value}</td>"
+        rowsGr += "</tr>"
+    #Obtenemos la descripción de los datos numéricos
+    global describeNEDA
+    datosN = describeNEDA
+    #Obtenemos las columnas
+    cont = 0
+    columnsN = "<tr>"
+    for col in datosN.columns:
+        if cont==0:
+            columnsN += f"<th></th>"
+            cont +=1
+        columnsN += f"<th>{col}</th>"
+    columnsN += "</tr>"
+    #Obtenemos los datos de las filas y generamos la tabla en código html
+    rowsN = ""
+    cont = 0
+    for row in datosN.values:
+        rowsN += "<tr>"
+        if cont == 0:
+            rowsN += "<td>Count</td>"
+        elif cont == 1:
+            rowsN += "<td>Mean</td>"
+        elif cont == 2:
+            rowsN += "<td>STD</td>"
+        elif cont == 3:
+            rowsN += "<td>Min</td>"
+        elif cont == 4:
+            rowsN += "<td>25%</td>"
+        elif cont == 5:
+            rowsN += "<td>50%</td>"
+        elif cont == 6:
+            rowsN += "<td>75%</td>"
+        elif cont == 7:
+            rowsN += "<td>Max</td>"    
+        for value in row:
+            rowsN += f"<td>{value}</td>"
+        rowsN += "</tr>"    
+        cont +=1    
+    #Obtenemos el número de gráficas de cajas generadas
+    global caja
+    numC = caja
+    contador = 0
+    graficasC = []
+    while contador < numC:
+        contador += 1
+        graficasC.append(str(contador))
+    #Obtenemos la descripción de los datos tipo objeto
+    global describeOEDA
+    datosO = describeOEDA
+    #Obtenemos las columnas
+    cont = 0
+    columnsO = "<tr>"
+    for col in datosO.columns:
+        if cont==0:
+            columnsO += f"<th></th>"
+            cont +=1
+        columnsO += f"<th>{col}</th>"
+    columnsO += "</tr>"
+    #Obtenemos los datos de las filas y generamos la tabla en código html
+    rowsO = ""
+    cont = 0
+    for row in datosO.values:
+        rowsO += "<tr>"
+        if cont == 0:
+            rowsO += "<td>Count</td>"
+        elif cont == 1:
+            rowsO += "<td>Unique</td>"
+        elif cont == 2:
+            rowsO += "<td>Top</td>"
+        elif cont == 3:
+            rowsO += "<td>Freq</td>"
+        for value in row:
+            rowsO += f"<td>{value}</td>"
+        rowsO += "</tr>"    
+        cont +=1
+    #Obtenemos el número de gráficas de barras generadas
+    global graf
+    numC = graf
+    contador = 0
+    graficasB = []
+    while contador < numC:
+        contador += 1
+        graficasB.append(str(contador))   
+    #Creamos el contexto
+    context = {"columnsGr":columnsGr, "rowsGr":rowsGr, "columnsN":columnsN, "rowsN":rowsN, "graficasC":graficasC, "columnsO":columnsO, "rowsO":rowsO, "graficasB":graficasB}
+    return render(request, "DMFEApp/resultadosEDA.html", context)
+
+
 
 #Vistas necesarias para el algoritmo PCA
 def pca(request):

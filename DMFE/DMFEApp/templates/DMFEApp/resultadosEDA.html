@@ -1,0 +1,70 @@
+{% extends 'DMFEApp/general.html' %}
+
+{% block content %}
+<!-- page content -->
+<div class="right_col text-left" role="main">
+    <h1 class = "text-center">ResultadosEDA</h1>
+    <h2>La información obteinda de la tabla es: </h2>
+    <div class="table-responsive">
+        <table  class="table table-sm table-hover table-bordered table-striped table-dark">
+          <thead>
+            {{ columnsGr | safe }}  
+          </thead>
+          <tbody>
+            {{ rowsGr | safe }}
+          </tbody>
+        </table>
+    </div>
+    <h2> La distribución de tus variables numéricas es:</h2>
+    <article>
+        <div class = "container-article" align = "center">
+          <img src = "media/graficas/EDA/distribucion.png" width="1000" height="800">
+        </div>
+    </article>
+    <h2>A continuación se muestran datos como la cantidad de datos, media, desviación estándar y otros datos de interés:</h2>
+    <div class="table-responsive">
+        <table  class="table table-sm table-hover table-bordered table-striped table-dark">
+          <thead>
+            {{ columnsN | safe }}  
+          </thead>
+          <tbody>
+            {{ rowsN | safe }}
+          </tbody>
+        </table>
+    </div>
+    <h2>Ahora, se mostrarán las gráficas de caja para detectar datos atípicos de las variables flotantes:</h2>
+    {% for n in graficasC %}
+        <article>
+            <div class = "container-article" align ="center">
+            <img src = "media/graficas/EDA/caja{{n}}.png" width="700" height="700">
+            </div>
+        </article>
+    {% endfor %}
+    <h2>Posteriormente, tenemos la descripción de los datos tipo objeto:</h2>
+    <div class="table-responsive">
+        <table  class="table table-sm table-hover table-bordered table-striped table-dark">
+          <thead>
+            {{ columnsO | safe }}  
+          </thead>
+          <tbody>
+            {{ rowsO | safe }}
+          </tbody>
+        </table>
+    </div>
+    <h2>Ahora, se mostrarán las gráficas de barrras para estas variables siempre y cuando tengan un máximo de 9 datos únicos:</h2>
+    {% for n in graficasB %}
+        <article>
+            <div class = "container-article" align ="center">
+            <img src = "media/graficas/EDA/grafica{{n}}.png" width="700" height="700">
+            </div>
+        </article>
+    {% endfor %}
+    <h2>Finalmente, la correlación existente entre los datos se muestra en al siguiente gráfica:</h2>
+    <article>
+        <div class = "container-article" align ="center">
+        <img src = "media/graficas/EDA/heatmap.png" width="800" height="400">
+        </div>
+    </article>
+</div>
+<!-- /page content -->
+{% endblock %}

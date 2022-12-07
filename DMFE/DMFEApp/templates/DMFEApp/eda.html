@@ -44,24 +44,7 @@
     Si deseas ver gráficas de caja de variables numéricas, indica los nombres de las columnas separadas por una ','
     en caso contrario solamente aprieta el botón.
   </h2>
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label for="text" class="control-label col-xs-4">Text Field</label> 
-      <div class="col-xs-8">
-        <div class="input-group">
-          <div class="input-group-addon">
-            <i class="fa fa-align-justify"></i>
-          </div> 
-          <input id="text" name="text" type="text" class="form-control">
-        </div>
-      </div>
-    </div> 
-    <div class="form-group row">
-      <div class="col-xs-offset-4 col-xs-8">
-        <button name="submit" type="submit" class="btn btn-primary">Obtener Resultados</button>
-      </div>
-    </div>
-  </form>
+  <a class="btn btn-success" href="{% url 'DMFEApp:ResultadosEDA' %}"> Obtener Resultados</a>
   {% endif %}
   <!--<a class="btn btn-danger" href="{% url 'DMFEApp:ResultadosPCA' %}"> Seleccionar</a>-->
 </div>
