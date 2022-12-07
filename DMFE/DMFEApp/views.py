@@ -7,6 +7,13 @@ import numpy as np
 import matplotlib.pyplot as plt        
 import seaborn as sns
 
+#Variables globales para EDA
+infoEDA = pd.DataFrame()
+describeNEDA = pd.DataFrame()
+describeOEDA = pd.DataFrame()
+caja = 0
+graf = 0
+
 #Variables globales necesarias para PCA
 DatosACP = pd.DataFrame()
 varPCA = 0
@@ -49,20 +56,68 @@ def mostrarDatosEDA(request, id_file):
     
     #Volvemos a mandar los documentos disponibles para listarlos
     files = models.Document.objects.all()
-
-    obtenerResultadosPCA(id_file)
-
+    #Calculamos los datos
+    cajas, graficas = obtenerResultadosEDA(id_file)
+    #guardamos las imágenes creadas en las variables gloables
+    global caja
+    caja = cajas
+    global graf
+    graf = graficas
     #Creamos nuestro contexto
     context = {"columns": columns, "rows": rows, "files":files, "id_file": id_file}  
-    return render(request, "DMFEApp/PCA.html", context)
+    return render(request, "DMFEApp/eda.html", context)
 
+def obtenerResultadosEDA(id_file):
+    #leemos el archivo
+    file = models.Document.objects.get(pk=id_file)
+    archivo = pd.read_csv(file.uploadedFile)
+    #guardamos la información en la variable global
+    global infoEDA
+    infoEDA = archivo.info()
+    #creamos y guardamos la gráfica
+    archivo.hist(figsize=(14,14), xrot=45)
+    plt.savefig('media/graficas/EDA/distribucion.png')
+    plt.clf()
+    #guardamos la descripción de los datos en la variable global
+    global describeNEDA
+    describeNEDA = archivo.describe()
+    #creamos las gráficas de caja
+    cajas = archivo.describe(include='float64')
+    contadorC = 0
+    for a in cajas.columns:
+        contadorC += 1
+        sns.boxplot(data=archivo, x=a)
+        ruta = 'media/graficas/EDA/caja'+str(contadorC)+'.png'
+        plt.savefig(ruta)
+        plt.clf()
+    #guardamos la descripción de datos tipo objeto en la variable global
+    global describeOEDA
+    describeOEDA = archivo.describe(include='object')
+    #creamos las gráficas
+    object = archivo.select_dtypes(include='object')
+    contadorG = 0
+    for x in object.columns:
+        if object[x].nunique() < 10:
+            sns.countplot(y=x, data=archivo)
+            contadorG += 1
+            ruta = 'media/graficas/EDA/grafica'+str(contadorG)+'.png'
+            plt.savefig(ruta)
+            plt.clf()
+    #creamos el mapa de calor
+    plt.figure(figsize=(14,7))
+    MatrizInf = np.triu(archivo.corr())
+    sns.heatmap(archivo.corr(), cmap='RdBu_r', annot=True, mask=MatrizInf)
+    plt.savefig('media/graficas/EDA/heatmap.png')
+    plt.clf()
+
+    return (contadorC, contadorG)
 
 #Vistas necesarias para el algoritmo PCA
 def pca(request):
     files = models.Document.objects.all()
     return render(request, "DMFEApp/PCA.html", {"files": files})
 
-def mostrarDatos(request, id_file):
+def mostrarDatosPCA(request, id_file):
     file = models.Document.objects.get(pk=id_file)
     archivo = pd.read_csv(file.uploadedFile)
     
@@ -179,7 +234,7 @@ def obtenerResultadosPCA (id_file):
     global DatosACP
     DatosACP = DatosACP2
 
-def  resultadosPCA(request):
+def resultadosPCA(request):
     global varPCA
     varianza = varPCA
     global DatosACP

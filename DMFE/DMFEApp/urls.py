@@ -6,17 +6,21 @@ from django.conf.urls.static import static
 app_name = "DMFEApp"
 
 urlpatterns = [
+    #plantilla de home
     path('home.html', views.home, name="Home"),
+    #plantilla de instrucciones
     path('instructions.html', views.instructions, name="Instructions"),
+    #plantillas para el algoritmo EDA
     path('eda.html', views.eda, name="EDA"),
     path("mostrarDatosEDA.html/<int:id_file>", views.mostrarDatosEDA, name ="MostrarDatosEDA"),
-
+    #plantillas para el algoritmo PCA
     path('pca.html', views.pca, name="PCA"),
-    path("", views.uploadFile, name = "UploadFile"),
+    path("mostrarDatosPCA.html/<int:id_file>", views.mostrarDatosPCA, name ="MostrarDatosPCA"),
+    path("resultadosPCA.html", views.resultadosPCA, name ="ResultadosPCA"),
+    #plantillas para archivos
+    path("uploadFile.html", views.uploadFile, name = "UploadFile"),
     path("file.html", views.listarArchivos, name = "Files"),
     path("deleteFile.html/<int:id_file>", views.deleteFile, name ="DeleteFile"),
-    path("mostrarDatos.html/<int:id_file>", views.mostrarDatos, name ="MostrarDatos"),
-    path("resultadosPCA.html", views.resultadosPCA, name ="ResultadosPCA"),
 ]
 
 if settings.DEBUG: 
