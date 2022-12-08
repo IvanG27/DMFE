@@ -1,48 +1,54 @@
 {% extends 'DMFEApp/general.html' %}
 {% block content %}
-  <!-- page content -->
-      <div class="right_col text-left" role="main">
-        <h1 class="text-center"> PCA </h1>
-        <h2>Selecciona el archivo con el que deseas trabajar</h2>
-        <div class="table-responsive">
-          <table class="table-bordered table-hover table table-primary "> 
-            <thead>
-              <tr>
-                <th scope="col">Nombre del archivo</th>
-                <th scope="col">Fecha de subida</th>
-                <th scope="col">Ruta</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for file in files %}
-              <tr>
-                <td>{{ file.title }}</td>
-                <td>{{ file.dateTimeOfUpload }}</td>
-                <td>{{ file.uploadedFile.url }}</td>
-                <td><a class="btn btn-primary" href="{% url 'DMFEApp:MostrarDatosPCA' file.id %}"> Seleccionar</a></td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-      | </div>
-        {% if columns %}
-        <h2>Para efectos de simplicidad, se mostrarán las primeras 10 columas del archivo seleccionado: 
-        </h2>
-        <div class="table-responsive">
-          <table  class="table table-bordered table-hover table-info">
-            <thead>
-              {{ columns | safe }}  
-            </thead>
-            <tbody>
-              {{ rows | safe }}
-            </tbody>
-          </table>
-        </div>
-        <h2>Si es el archivo que buscabas, presiona el siguiente botón para ejecutar el algoritmo y ver los resultados:</h2>
-        <a class="btn btn-success" href="{% url 'DMFEApp:ResultadosPCA' %}"> Obtener Resultados</a>
-        {% endif %}
-      </div>
+<!-- page content -->
+
+  <div class="right_col text-left" role="main">
+    <h1 class="text-center"> PCA </h1>
+    {% if files == false %}
+    <h2>No has subido ningun archivo hasta ahora</h2>
+    {%  endif %}
+    {% if files %}
+    <h2>Selecciona el archivo con el que deseas trabajar</h2>
+    <div class="table-responsive">
+      <table class="table-bordered table-hover table table-primary "> 
+        <thead>
+          <tr>
+            <th scope="col">Nombre del archivo</th>
+            <th scope="col">Fecha de subida</th>
+            <th scope="col">Ruta</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in files %}
+          <tr>
+            <td>{{ file.title }}</td>
+            <td>{{ file.dateTimeOfUpload }}</td>
+            <td>{{ file.uploadedFile.url }}</td>
+            <td><a class="btn btn-primary" href="{% url 'DMFEApp:MostrarDatosPCA' file.id %}"> Seleccionar</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    {% if columns %}
+    <h2>Para efectos de simplicidad, se mostrarán las primeras 10 columas del archivo seleccionado: 
+    </h2>
+    <div class="table-responsive">
+      <table  class="table table-bordered table-hover table-info">
+        <thead>
+          {{ columns | safe }}  
+        </thead>
+        <tbody>
+          {{ rows | safe }}
+        </tbody>
+      </table>
+    </div>
+    <h2>Si es el archivo que buscabas, presiona el siguiente botón para ejecutar el algoritmo y ver los resultados:</h2>
+    <a class="btn btn-success" href="{% url 'DMFEApp:ResultadosPCA' %}"> Obtener Resultados</a>
+    {% endif %}
+  </div>
       
-  <!-- /page content -->
+<!-- /page content -->
 {% endblock %}
