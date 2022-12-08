@@ -4,7 +4,8 @@ from . import models
 from django.core.files.storage import FileSystemStorage
 import pandas as pd                 
 import numpy as np                     
-import matplotlib.pyplot as plt        
+import matplotlib.pyplot as plt   
+plt.rcParams['axes.facecolor'] = 'black'
 import seaborn as sns
 
 #Variables globales para EDA
@@ -24,7 +25,6 @@ def home(request):
 
 def instructions(request):
     return render(request, "DMFEApp/instructions.html")
-
 
 
 #Vistas necesarias para el algoritmo EDA
@@ -108,6 +108,7 @@ def obtenerResultadosEDA(id_file):
             sns.countplot(y=x, data=archivo)
             contadorG += 1
             ruta = 'media/graficas/EDA/grafica'+str(contadorG)+'.png'
+            
             plt.savefig(ruta)
             plt.clf()
     #creamos el mapa de calor
