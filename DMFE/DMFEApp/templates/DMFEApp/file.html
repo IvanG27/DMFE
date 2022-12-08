@@ -13,30 +13,30 @@
             <input type="submit" value="Upload">
           </form>
           <h2>Archivos disponibles</h2>
-          <table class="table table-bordered table-hover table-primary ">
-            <thead>
-              <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Nombre del archivo</th>
-                <th scope="col">Fecha de subida</th>
-                <th scope="col">Ruta</th>
-                <th scope="col">Eliminar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for file in files %}
-              <tr>
-                <td>{{ file.id }}</td>
-                <td>{{ file.title }}</td>
-                <td>{{ file.dateTimeOfUpload }}</td>
-                <td>{{ file.uploadedFile.url }}</td>
-                <td><a class="btn btn-danger" href="{% url 'DMFEApp:DeleteFile' file.id %}"> Eliminar</a></td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          
-          </table>
-                 
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover table-primary ">
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Nombre del archivo</th>
+                  <th scope="col">Fecha de subida</th>
+                  <th scope="col">Ruta</th>
+                  <th scope="col">Eliminar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for file in files %}
+                <tr>
+                  <td>{{ file.id }}</td>
+                  <td>{{ file.title }}</td>
+                  <td>{{ file.dateTimeOfUpload }}</td>
+                  <td>{{ file.uploadedFile.url }}</td>
+                  <td><a class="btn btn-danger" href="{% url 'DMFEApp:DeleteFile' file.id %}"> Eliminar</a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>       
         </div>
     <!-- /page content -->
 

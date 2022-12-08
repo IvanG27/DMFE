@@ -4,26 +4,28 @@
       <div class="right_col text-left" role="main">
         <h1 class="text-center"> PCA </h1>
         <h2>Selecciona el archivo con el que deseas trabajar</h2>
-        <table class="table-bordered table-hover table table-primary "> 
-          <thead>
-            <tr>
-              <th scope="col">Nombre del archivo</th>
-              <th scope="col">Fecha de subida</th>
-              <th scope="col">Ruta</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for file in files %}
-            <tr>
-              <td>{{ file.title }}</td>
-              <td>{{ file.dateTimeOfUpload }}</td>
-              <td>{{ file.uploadedFile.url }}</td>
-              <td><a class="btn btn-primary" href="{% url 'DMFEApp:MostrarDatosPCA' file.id %}"> Seleccionar</a></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table-bordered table-hover table table-primary "> 
+            <thead>
+              <tr>
+                <th scope="col">Nombre del archivo</th>
+                <th scope="col">Fecha de subida</th>
+                <th scope="col">Ruta</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for file in files %}
+              <tr>
+                <td>{{ file.title }}</td>
+                <td>{{ file.dateTimeOfUpload }}</td>
+                <td>{{ file.uploadedFile.url }}</td>
+                <td><a class="btn btn-primary" href="{% url 'DMFEApp:MostrarDatosPCA' file.id %}"> Seleccionar</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+      | </div>
         {% if columns %}
         <h2>Para efectos de simplicidad, se mostrarán las primeras 10 columas del archivo seleccionado: 
         </h2>
